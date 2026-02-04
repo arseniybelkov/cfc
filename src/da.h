@@ -11,7 +11,8 @@ to have fields `size_t size`, `size_t capacity` and `T* data`
 
 */
 
-// #define da_new(DA_TYPE)
+const size_t DEFAULT_DA_CAPACITY = 8;
+const size_t CAPACITY_MUL = 2;
 
 #define NewDAType(NAME, DATA_TYPE)\
 	typedef struct NAME {\
@@ -20,20 +21,35 @@ to have fields `size_t size`, `size_t capacity` and `T* data`
 		size_t capacity;\
 	} NAME;
 
-#define TODO(msg) do {\
-		printf(msg);\
-		exit(1);\
-	} while (0);\
+#define da_new(da) da_with_capacity(da, DEFAULT_DA_CAPACITY)
+
+#define da_with_capacity(da, _capacity) do {\
+		size_t ptr1 = (size_t) (da.data + 1);\
+		size_t ptr2 = (size_t) da.data;\
+		size_t type_size = ptr1 - ptr2;\
+		da.data = malloc(type_size * _capacity);\
+		da.capacity = _capacity;\
+		da.size = 0;\
+	} while (0)\
+
+#define _da_reallocate(da) do {\
+		size_t ptr1 = (size_t) (da.data + 1);\
+		size_t ptr2 = (size_t) da.data;\
+		size_t type_size = ptr1 - ptr2;\
+		size_t new_capacity = da.capacity * CAPACITY_MUL;\
+		da.data = realloc(da.data, type_size * new_capacity);\
+		da.capacity = new_capacity;\
+	} while (0)\
 
 #define da_push(da, value) do {\
 		if (da.size == da.capacity) {\
-			TODO("reallocate");\
+			_da_reallocate(da);\
 		}\
 		da.data[da.size] = value;\
 		da.size++;\
 	} while (0);\
 
-#define da_pop(da, value) do {\
+#define da_pop(da) do {\
 		da.size--;\
 	} while (0);\
 
