@@ -1,8 +1,10 @@
 #ifdef CONTAINERS_FOR_C
 
 #pragma once
+#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 /*
 
@@ -51,6 +53,24 @@ const size_t CAPACITY_MUL = 2;
 
 #define da_pop(da) do {\
 		da.size--;\
+	} while (0);\
+
+#define da_clone(da_src, da_dst) do {\
+		size_t ptr1 = (size_t) (da_src.data + 1);\
+		size_t ptr2 = (size_t) da_src.data;\
+		size_t type_size = ptr1 - ptr2;\
+		da_dst.data = malloc(type_size * da_src.capacity);\
+		assert(\
+			memcpy(da_dst.data, da_src.data, da_src.capacity * type_size)\
+		);\
+		da_dst.size = da_src.size;\
+		da_dst.capacity = da_src.capacity;\
+	} while (0)\
+
+#define da_free(da) do {\
+		if (da.data) {\
+			free(da.data);\
+		}\
 	} while (0);\
 
 #endif
